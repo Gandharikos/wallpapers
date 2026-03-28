@@ -1,0 +1,46 @@
+# Example: Manual wallpaper tags configuration (inspired by yunfachi/nix-config-wallpapers)
+# This is an optional alternative to automatic tag generation from filenames.
+#
+# Usage:
+# 1. Copy this file: cp wallpapers-manual.nix.example wallpapers-manual.nix
+# 2. Fill in tags for your wallpapers
+# 3. Update flake.nix to use this configuration instead of lib.toWallpkgs
+
+builtins.mapAttrs (name: value: let
+  fileExtensions = ["png" "jpg" "jpeg" "gif" "webp"];
+
+  # Parse theme and filename from the key (format: "theme/filename")
+  parts = builtins.split "/" name;
+  theme = builtins.elemAt parts 0;
+  filename = builtins.elemAt parts 2;
+
+  # Find the actual file with any valid extension
+  file = let
+    tryExtensions = map (ext: ./wallpapers/${theme}/${filename}.${ext}) fileExtensions;
+    existing = builtins.filter builtins.pathExists tryExtensions;
+  in
+    if existing != []
+    then builtins.head existing
+    else builtins.throw "Wallpaper '${name}' does not exist";
+in {
+  path = file;
+  tags = value;
+  hash = builtins.hashFile "md5" file;
+})
+{
+  # Catppuccin theme examples
+  "catppuccin/anime" = ["catppuccin" "anime" "girl" "colorful"];
+  "catppuccin/forest" = ["catppuccin" "nature" "forest" "dark"];
+  "catppuccin/cyberpunk" = ["catppuccin" "city" "cyberpunk" "neon"];
+
+  # Tokyo Night theme examples
+  "tokyonight/anime" = ["tokyonight" "anime" "purple" "night"];
+  "tokyonight/city" = ["tokyonight" "city" "neon" "dark"];
+
+  # Gruvbox theme examples
+  "gruvbox/forest" = ["gruvbox" "nature" "warm" "autumn"];
+  "gruvbox/mountain" = ["gruvbox" "landscape" "mountain" "vintage"];
+
+  # Add more wallpapers here...
+  # Format: "theme/filename-without-extension" = ["tag1" "tag2" "tag3"];
+}
