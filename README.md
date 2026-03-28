@@ -33,7 +33,7 @@ This repository is a Nix flake. Add it to your flake inputs:
 
   outputs = {nixpkgs, wallpapers, ...}: {
     # Example: Use a specific wallpaper
-    # wallpapers.wallpapers.tokyonight.anime.path
+    # wallpapers.tokyonight.anime-landscape.path
 
     # Example: Filter wallpapers by tag
     homeConfigurations.youruser = {
@@ -41,7 +41,7 @@ This repository is a Nix flake. Add it to your flake inputs:
         source = let
           catppuccinWalls = builtins.filter
             (wall: builtins.elem "catppuccin" wall.tags)
-            (builtins.attrValues wallpapers.wallpapers);
+            (builtins.attrValues wallpapers.catppuccin);
         in catppuccinWalls;
       };
     };
@@ -58,8 +58,8 @@ Each wallpaper has the following attributes:
 
 Example:
 ```nix
-# Access: wallpapers.wallpapers.catppuccin.anime-girl
-# Returns: { path = "..."; tags = ["anime", "girl"]; hash = "..."; }
+# Access: wallpapers.catppuccin.anime-girl
+# Returns: { path = "..."; tags = ["catppuccin", "anime", "girl"]; hash = "..."; }
 ```
 
 ## Preview
